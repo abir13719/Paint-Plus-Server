@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -29,27 +29,69 @@ async function run() {
 
     const SliderCollection = client.db("paintPlus").collection("slider");
     const PaintCollection = client.db("paintPlus").collection("paintings");
+
+    // Read Slider Data
     app.get("/slider", async (req, res) => {
       const cursor = SliderCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
 
-    app.post("/painting", async (req, res) => {
-      const painting = req.body;
-      const result = await PaintCollection.insertOne(painting);
-      res.send(result);
-    });
-
+    // Read All Painting Data
     app.get("/painting", async (req, res) => {
       const cursor = PaintCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
 
+    // Read My Painting Data by Email
     app.get("/painting/:email", async (req, res) => {
       const cursor = PaintCollection.find({ email: req.params.email });
       const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // Read Update Painting Data by Id
+    app.get("/painting/update/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: new ObjectId(id) };
+      const result = await PaintCollection.findOne(query);
+      res.send(result);
+    });
+
+    // Create All Paint Collection
+    app.post("/painting", async (req, res) => {
+      const painting = req.body;
+      const result = await PaintCollection.insertOne(painting);
+      res.send(result);
+    });
+
+    // Update My Paint Data by Id
+    app.put("/painting/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedPaint = req.body;
+      console.log("updated paint", updatedPaint);
+
+      // //updating in database
+      const filter = { _id: new ObjectId(id) };
+      const option = { upsert: true };
+      const newUpdatedInformations = {
+        $set: {
+          photoURL: updatedPaint.photoURL,
+          paintName: updatedPaint.paintName,
+          category: updatedPaint.category,
+          rating: updatedPaint.rating,
+          price: updatedPaint.price,
+          customization: updatedPaint.customize,
+          process: updatedPaint.pTime,
+          stockStatus: updatedPaint.stock,
+          email: updatedPaint.email,
+          userName: updatedPaint.userName,
+          description: updatedPaint.description,
+        },
+      };
+      const result = await PaintCollection.updateOne(filter, newUpdatedInformations, option);
       res.send(result);
     });
 
