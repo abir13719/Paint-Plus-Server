@@ -41,6 +41,12 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/painting", async (req, res) => {
+      const cursor = PaintCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     app.get("/painting/:email", async (req, res) => {
       const cursor = PaintCollection.find({ email: req.params.email });
       const result = await cursor.toArray();
