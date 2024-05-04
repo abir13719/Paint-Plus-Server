@@ -29,10 +29,18 @@ async function run() {
 
     const SliderCollection = client.db("paintPlus").collection("slider");
     const PaintCollection = client.db("paintPlus").collection("paintings");
+    const FeedbackCollection = client.db("paintPlus").collection("userFeedback");
 
     // Read Slider Data
     app.get("/slider", async (req, res) => {
       const cursor = SliderCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // Read Feedback Data
+    app.get("/feedback", async (req, res) => {
+      const cursor = FeedbackCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
