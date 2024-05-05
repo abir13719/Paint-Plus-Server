@@ -9,9 +9,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Routes
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.k8que7r.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
-// const uri = "mongodb://localhost:27017";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -62,7 +60,6 @@ async function run() {
     // Read Update Painting Data by Id
     app.get("/painting/update/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(id);
       const query = { _id: new ObjectId(id) };
       const result = await PaintCollection.findOne(query);
       res.send(result);
@@ -79,7 +76,6 @@ async function run() {
     app.put("/painting/:id", async (req, res) => {
       const id = req.params.id;
       const updatedPaint = req.body;
-      console.log("updated paint", updatedPaint);
 
       // //updating in database
       const filter = { _id: new ObjectId(id) };
@@ -106,8 +102,6 @@ async function run() {
     // Delete My Paint Data by Id
     app.delete("/painting/:id", async (req, res) => {
       const id = req.params.id;
-      console.log("delete paint from database", id);
-
       const query = { _id: new ObjectId(id) };
       const result = await PaintCollection.deleteOne(query);
       res.send(result);
